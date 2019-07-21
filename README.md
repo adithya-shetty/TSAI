@@ -1,2 +1,4 @@
-# TSAI-Assigment1
-This repository is corresponding to Assignment 1 of TSAI.
+# TSAI-Assigments
+This repository is corresponding to Assignments of TSAI.
+
+**poject1** - Contains assigment files of session 1.
