@@ -9,4 +9,5 @@ This repository is corresponding to Assignments of TSAI.
 **project6** - Contains assigment files of session 6.\
 **project7** - Contains assigment files of session 7.\
 **project9** - Contains assigment files of session 9.\
-**project10** - Contains assigment files of session 10.
+**project10** - Contains assigment files of session 10.\
+**project11** - Contains assigment files of session 11.
