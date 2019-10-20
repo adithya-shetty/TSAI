@@ -11,5 +11,7 @@ This repository is corresponding to Assignments of TSAI.
 **project9** - Contains assigment files of session 9.\
 **project10** - Contains assigment files of session 10.\
 **project11** - Contains assigment files of session 11.\
-**project12** - Contains assigment files of session 12.\
-**project13** - Contains assigment files of session 13.
+**project12** - Will be added soon.\
+**project13** - Will be added soon.\
+**project14** - Will be added soon.
+
