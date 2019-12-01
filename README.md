@@ -14,5 +14,6 @@ This repository is corresponding to Assignments of TSAI.
 **project12** - Will be added soon.\
 **project13** - Will be added soon.\
 **project14** - Will be added soon.\
-**project15** - Will be added soon.
+**project16** - Will be added soon.\
+**project18** - Will be added soon.
 
