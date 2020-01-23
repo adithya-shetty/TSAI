@@ -1,13 +1,15 @@
-# Movie Review Classification with Word Embeddings (Feb 2018)
-Classified movie reviews into positive and negative with GloVe embeddings and machine learning techniques.
+# Movie Review Classification with Glove Word Embeddings using simple neural network
+Classify movie reviews into positive and negative with GloVe embeddings.
 
 ## Description
-The large movie view dataset (http://ai.stanford.edu/~amaas/data/sentiment/) contains a collection of 50,000 reviews from IMDB. The dataset contains an even number of positive and negative reviews and is divided into training and test sets. The training set is the same 25,000 labeled reviews. The sentiment classification task consists of predicting the polarity (positive or negative) of a given text.
+  - Dataset : IMDB dataset
+  - GloVe embedding dim : 50
+  - Train samples : 8000
+  - Val samples : 10000
+  - Max words : 10000
 
-## Steps
-1. Use the libary spacy to tokenize data. 
-2. Download embedding vectors from https://nlp.stanford.edu/projects/glove/.
-3. Read the 300 dimensional GloVe embeddings into a dictionary.
-4. Create average feature embedding for each sentence (ignore stopwords).
-5. Fit an XGBoost classifier to this data. Report test and training errors.
-6. Compare previous results to fitting XGBoost to a one-hot encoding representation of the data with bag of words. Report test and training errors.
+## Results
+**Loss curve**
+[![Loss](https://github.com/adithya-shetty/TSAI/raw/master/phase2_1/loss.png)]
+**Accuracy curve**
+[![Accuracy](https://github.com/adithya-shetty/TSAI/raw/master/phase2_1/accuracy.png)]
