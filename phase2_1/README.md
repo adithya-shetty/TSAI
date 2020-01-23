@@ -10,6 +10,7 @@ Classify movie reviews into positive and negative with GloVe embeddings.
 
 ## Results
 **Loss curve**
-[![Loss](https://github.com/adithya-shetty/TSAI/raw/master/phase2_1/loss.png)]
+![Loss](https://github.com/adithya-shetty/TSAI/raw/master/phase2_1/loss.png)
+
 **Accuracy curve**
-[![Accuracy](https://github.com/adithya-shetty/TSAI/raw/master/phase2_1/accuracy.png)]
+![Accuracy](https://github.com/adithya-shetty/TSAI/raw/master/phase2_1/accuracy.png)
