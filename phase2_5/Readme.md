@@ -9,6 +9,6 @@ Template pytorch code to train MNIST dataset
 ## Achieved Results
   - Model Params : 11,718
   - Max Epochs : 14
-  - Val Accuracy : 99.36
+  - Val Accuracy : 99.33
 
 
