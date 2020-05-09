@@ -92,11 +92,11 @@ class Game(Widget):
 
     state_dim = 13
     action_dim = 1
-    max_action = 15.0
+    max_action = 25.0
 
     policy = TD3(state_dim, action_dim, max_action)
     env_state = DNN()
-    env_state.load_state_dict(torch.load('./pytorch_models/cnn.pth'))
+    # env_state.load_state_dict(torch.load('./pytorch_models/cnn.pth'))
     replay_buffer = ReplayBuffer()
 
     max_episode_steps = 1000
@@ -108,8 +108,9 @@ class Game(Widget):
     t0 = time.time()
     living_penalty = 0
     last_distance = 0
+    road_travelled = 0
     obs = []
-    file_name = "T3D_car_0"
+    file_name = "T3D_car_1"
     policy.load(file_name, './pytorch_models/')
 
     if save_models and not os.path.exists("./pytorch_models"):
@@ -159,72 +160,82 @@ class Game(Widget):
           last_x = 580
           last_y = 340
           self.living_penalty = 0
+          self.road_travelled = 0
         
         if self.total_timesteps < self.start_timesteps:
-          self.action = np.array([random.uniform(-1, 1)*15])
+          self.action = np.array([random.uniform(-1, 1)*25])
         else: # After 10000 timesteps, we switch to the model
           self.action = self.policy.select_action(np.array(self.obs))
+          # print(self.action)
 
           if self.expl_noise != 0:
-            self.action = (self.action + np.random.normal(0, self.expl_noise, size=1)).clip(-15, 15)
+            self.action = (self.action + np.random.normal(0, self.expl_noise, size=1)).clip(-25, 25)
         
         self.car.move(int(self.action[0]))
         new_obs = get_obs(self.img, self.car.x, self.car.y, goal_x, goal_y, self.env_state, self.car)
         distance = abs(np.sqrt((self.car.x - goal_x)**2 + (self.car.y - goal_y)**2))
+        prev_dist = abs(np.sqrt((self.car.x - last_x)**2 + (self.car.y - last_y)**2))
+        # print(prev_dist)
+        self.car.velocity = Vector(1.0, 0).rotate(self.car.angle)
 
         #Reward Calculation
         self.living_penalty += 0.02
         if self.img[last_x,last_y] == 0 and self.img[int(math.floor(self.car.x)),int(math.floor(self.car.y))] == 255:
-          last_reward += -12
+          self.living_penalty *= 1.01
+          self.living_penalty += 0.1
         elif self.img[last_x,last_y] == 255 and self.img[int(math.floor(self.car.x)),int(math.floor(self.car.y))] == 255:
-          last_reward += -24
-          self.living_penalty *= 1.004
+          self.living_penalty += 0.15
+          self.road_travelled += -0.05
         elif self.img[last_x,last_y] == 0 and self.img[int(math.floor(self.car.x)),int(math.floor(self.car.y))] == 0:
-          last_reward += -2
+          self.living_penalty += -0.005
+          self.road_travelled += 0.1
           self.living_penalty *= 0.999
         else:
-          last_reward += -6
+          self.living_penalty *= 1.01
+          self.living_penalty += 0.1
 
-        if int(math.floor(self.car.x)) == last_x and int(math.floor(self.car.y)) == last_y:
-          self.living_penalty += 0.4
-          last_reward += -12
-        elif int(math.floor(self.car.x)) != last_x and int(math.floor(self.car.y)) != last_y and self.img[int(math.floor(self.car.x)),int(math.floor(self.car.y))] == 0:
-          self.living_penalty -= 0.05
-          last_reward += 0.5
+        if prev_dist<0.5:
+          self.living_penalty += 0.05
+        elif prev_dist>0.5 and prev_dist<1.5:
+          self.living_penalty += 0.005
+        else:
+          self.living_penalty -= 0.01
 
         if self.img[int(math.floor(self.car.x)),int(math.floor(self.car.y))] == 255:
-            self.car.velocity = Vector(1.0, 0).rotate(self.car.angle)
+            if distance<100:
+              self.living_penalty *= 1.01
             if distance > self.last_distance:
-                last_reward += -6 - self.living_penalty
+                last_reward += -self.living_penalty*1.6
             else:
-                last_reward += -4 - self.living_penalty
+                last_reward += -self.living_penalty*1.4
         else: # otherwise
-            self.car.velocity = Vector(1, 0).rotate(self.car.angle)
+            if distance<100:
+              self.living_penalty *= 0.99
             if distance < self.last_distance:
-                last_reward += -0.5 - self.living_penalty
+                last_reward += -self.living_penalty
             else:
-                last_reward += -1 - self.living_penalty
+                last_reward += -self.living_penalty*1.2
 
-        last_reward += -distance/120
+        # last_reward += -distance/120
 
         if self.car.x <= 28:
             self.car.x = 28
-            last_reward += -55 -self.living_penalty -distance/40
+            last_reward += -355 -self.living_penalty -distance/40
             self.done = True
         if self.car.x >= self.width - 28:
             self.car.x = self.width - 28
-            last_reward += -55 -self.living_penalty -distance/40
+            last_reward += -355 -self.living_penalty -distance/40
             self.done = True
         if self.car.y <= 28:
             self.car.y = 28
-            last_reward += -55 -self.living_penalty -distance/40
+            last_reward += -355 -self.living_penalty -distance/40
             self.done = True
         if self.car.y >= self.height - 28:
             self.car.y = self.height - 28
-            last_reward += -55 -self.living_penalty -distance/40
+            last_reward += -355 -self.living_penalty -distance/40
             self.done = True
 
-        if distance < 8:
+        if distance < 4:
             goal_x = random.randint(int(self.width*0.35), int(self.width*0.65))
             goal_y = random.randint(int(self.height*0.35), int(self.height*0.65))
             while self.img[goal_x,goal_y] == 255:
@@ -233,18 +244,24 @@ class Game(Widget):
             last_reward += 15 - self.living_penalty
             self.living_penalty = 0
             self.done = True
-        if self.living_penalty > 15 and self.total_timesteps>200:
-          self.done = True
-          last_reward += -distance/80
+
+        if self.episode_timesteps>750: #self.living_penalty > 15 and self.total_timesteps>200:
+          if self.living_penalty > 15:
+            self.done = True
+          # last_reward += -distance/80
+
+        # if self.img[last_x,last_y] == 255 and self.img[int(math.floor(self.car.x)),int(math.floor(self.car.y))] == 255 and self.total_timesteps>self.start_timesteps:
+        #   self.done = True
 
         done_bool = float(self.done)
         
         if self.done == True:
+          last_reward += self.road_travelled
           print("reset")
           if self.img[int(math.floor(self.car.x)),int(math.floor(self.car.y))] == 255:
-            last_reward -= 4
+            last_reward -= 8 -distance/40
           else:
-            last_reward += 2
+            last_reward += 8 -distance/40
 
         self.replay_buffer.add((self.obs, new_obs, self.action, last_reward, done_bool))
         print(self.total_timesteps, self.action, last_reward, self.living_penalty, self.img[int(self.car.x),int(self.car.y)])
