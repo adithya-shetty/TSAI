@@ -7,4 +7,8 @@ Car game ported from DQN to T3D
 ### Execute command
 python map.py
 
+### Todo
+Keep car on the road
+
+
 
